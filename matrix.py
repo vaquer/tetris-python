@@ -1,16 +1,15 @@
-# from enum import Enum
 import numpy as np
 
 
 class TetrisMatrixGame(object):
     def __init__(self, *args, **kwargs):
-        self.shape = kwargs.get("shape", (30, 10))
+        self.shape = kwargs.get("shape", (23, 10))
         self.matrix = np.zeros(self.shape, dtype=np.int)
 
     def validate_add_matrix(self, block, rownum=0, colnum=0):
         height_matrix = len(block.shape)
 
-        if (colnum + block.widht()) > self.shape[1] - 1:
+        if (colnum + block.widht() - 1) > self.shape[1] - 1:
             return False
 
         if (rownum + block.height()) > self.shape[0] - 1:
@@ -31,6 +30,13 @@ class TetrisMatrixGame(object):
     def add_block(self, block, rownum, colnum):
         extract_matrix = self.matrix[rownum:rownum + block.height(), colnum: colnum + block.widht()]
         self.matrix[rownum:rownum + block.height(), colnum: colnum + block.widht()] = extract_matrix + block.matrix
+
+    def get_copy_with_block(self, block, rownum, colnum):
+        copy_matrix = self.matrix.copy()
+        extract_matrix = copy_matrix[rownum:rownum + block.height(), colnum: colnum + block.widht()]
+        copy_matrix[rownum:rownum + block.height(), colnum: colnum + block.widht()] = extract_matrix + block.matrix
+
+        return copy_matrix
 
     def _print(self):
         print self.matrix
@@ -72,6 +78,10 @@ class TetrisBlock(object):
             return 1
 
         return self.shape[0]
+
+    def rotate(self):
+        self.matrix = np.rot90(self.matrix)
+        self.shape = self.matrix.shape
 
     def _print(self):
         print self.matrix
